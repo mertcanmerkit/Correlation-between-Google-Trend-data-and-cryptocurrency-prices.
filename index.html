@@ -26,7 +26,7 @@
                     </div>
                 </div>
                 <div id='charts'>
-                    <!-- Chartlar buraya gelio  asd-->
+                    <!-- Chartlar buraya gelio -->
                 </div>
                 <!-- <div class="card mt-5">
                     <div class="card-body ">
@@ -40,7 +40,7 @@
     </div>
 
     <script>
-        function createChart(jsonName, metaName, metaID, backgroundColor, borderColor) {
+        function createChart(jsonName, dateRange, metaName, metaID, backgroundColor, borderColor) {
 
             document.getElementById("charts").innerHTML += "<div class='card mt-5'><div class='card-body'> <canvas id='" + metaID + "' width='900' height='500'></canvas></div></div>";
 
@@ -66,7 +66,7 @@
                             });
                         }
 
-                        var osman = [];
+                        var week_chart_data = [];
                         let from = 0;
                         let to = 0;
 
@@ -78,23 +78,43 @@
                                 to = i;
                                 //console.log(from, to, value);
 
-                                osman.push(getRangeSum(chart_data, from, to));
+                                week_chart_data.push(getRangeSum(chart_data, from, to));
 
                             }
                         }
 
-                        console.log(osman);
+                        var week_chart_labels = [];
+                        for (var i in chart_labels) {
+                            var value = chart_labels[(i == 0) ? 0 : i - 1];
+
+                            if (i % 7 == 0 & i != 0) {
+                                from = i - 7;
+                                to = i;
+                                //console.log(from, to, value);
+                                console.log(i);
+                                week_chart_labels.push(value);
+
+                            }
+                        }
+
+                        let range_data;
+
+                        if (dateRange == 'day') {
+                            range_data = chart_data;
+                        } else if (dateRange == 'week') {
+                            range_data = week_chart_data;
+                        }
 
                         var btc_ctx = document.getElementById(`${metaID}`).getContext('2d');
                         var btc_myChart = new Chart(btc_ctx, {
                             type: 'line',
                             data: {
-                                labels: chart_labels,
+                                labels: week_chart_labels,
                                 datasets: [{
                                     label: metaName,
                                     backgroundColor: backgroundColor,
                                     borderColor: borderColor,
-                                    data: chart_data,
+                                    data: range_data,
                                 }]
                             },
 
@@ -107,9 +127,9 @@
 
             dataJson();
         }
-        //createChart('ethereum.json', 'Ethereum', 'etc', 'rgb(60, 60, 61)', 'rgb(60, 60, 61)');
+        //createChart('ethereum.json', 'week','Ethereum', 'etc', 'rgb(60, 60, 61)', 'rgb(60, 60, 61)');
 
-        createChart('bitcoin.json', 'Bitcoin', 'btc', 'rgb(242, 169, 0)', 'rgb(242, 169, 0)');
+        createChart('bitcoin-week.json', 'week', 'Bitcoin', 'btc', 'rgb(242, 169, 0)', 'rgb(242, 169, 0)');
 
         function compareChart(jsonName, metaName, metaID, backgroundColor, borderColor, sc_jsonName, sc_metaName, sc_metaID, sc_backgroundColor, sc_borderColor) {
 
@@ -176,7 +196,7 @@
             dataJson();
         }
 
-        compareChart('bitcoin.json', 'Bitcoin', 'btc-c', 'rgb(242, 169, 0)', 'rgb(242, 169, 0)', 'btc-price.json', 'Price', 'price-c', 'rgb(60, 60, 61)', 'rgb(60, 60, 61)');
+        //compareChart('bitcoin.json', 'Bitcoin', 'btc-c', 'rgb(242, 169, 0)', 'rgb(242, 169, 0)', 'btc-price.json', 'Price', 'price-c', 'rgb(60, 60, 61)', 'rgb(60, 60, 61)');
     </script>
 
 </body>
