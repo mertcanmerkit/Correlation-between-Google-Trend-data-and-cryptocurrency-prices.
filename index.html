@@ -1,0 +1,184 @@
+<html>
+
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-/bQdsTh/da6pkI1MST/rWKFNjaCP5gBSY4sEBT38Q/9RBh9AH40zEOg7Hlq2THRZ" crossorigin="anonymous"></script>
+</head>
+
+<body>
+    <p id="result2"> </p>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-3">
+            </div>
+            <div class="col-6">
+                <div class="row">
+                    <div class="col-6">
+                        <div class="card mt-5">
+                            <div class="card-body" style="min-height: 140px;">
+                                <h5 class="card-title">Bitcoin</h5>
+                                <h5 id="btc-point" class="card-title"></h5>
+                                <h5 id="btc_status"></h5>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id='charts'>
+                    <!-- Chartlar buraya gelio  asd-->
+                </div>
+                <!-- <div class="card mt-5">
+                    <div class="card-body ">
+                        <canvas id="btc" width="900" height="500"></canvas>
+                    </div>
+                </div> -->
+            </div>
+            <div class="col-3">
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function createChart(jsonName, metaName, metaID, backgroundColor, borderColor) {
+
+            document.getElementById("charts").innerHTML += "<div class='card mt-5'><div class='card-body'> <canvas id='" + metaID + "' width='900' height='500'></canvas></div></div>";
+
+            function dataJson() {
+                fetch(`${jsonName}`)
+                    .then(response => response.json())
+                    .then(data => {
+
+                        var jsonData = data.default;
+
+                        var chart_labels = jsonData.timelineData.map(response => {
+                            return response.formattedTime;
+                        });;
+
+                        var chart_data = jsonData.timelineData.map(response => {
+                            var btc_value = JSON.parse(response.formattedValue);
+                            return btc_value;
+                        });;
+
+                        function getRangeSum(chart_data, from, to) {
+                            return chart_data.slice(from, to).reduce((p, c) => {
+                                return p + c;
+                            });
+                        }
+
+                        var osman = [];
+                        let from = 0;
+                        let to = 0;
+
+                        for (var i in chart_data) {
+                            var value = chart_data[(i == 0) ? 0 : i - 1];
+
+                            if (i % 7 == 0 & i != 0) {
+                                from = i - 7;
+                                to = i;
+                                //console.log(from, to, value);
+
+                                osman.push(getRangeSum(chart_data, from, to));
+
+                            }
+                        }
+
+                        console.log(osman);
+
+                        var btc_ctx = document.getElementById(`${metaID}`).getContext('2d');
+                        var btc_myChart = new Chart(btc_ctx, {
+                            type: 'line',
+                            data: {
+                                labels: chart_labels,
+                                datasets: [{
+                                    label: metaName,
+                                    backgroundColor: backgroundColor,
+                                    borderColor: borderColor,
+                                    data: chart_data,
+                                }]
+                            },
+
+                        });
+
+
+                    });
+
+            }
+
+            dataJson();
+        }
+        //createChart('ethereum.json', 'Ethereum', 'etc', 'rgb(60, 60, 61)', 'rgb(60, 60, 61)');
+
+        createChart('bitcoin.json', 'Bitcoin', 'btc', 'rgb(242, 169, 0)', 'rgb(242, 169, 0)');
+
+        function compareChart(jsonName, metaName, metaID, backgroundColor, borderColor, sc_jsonName, sc_metaName, sc_metaID, sc_backgroundColor, sc_borderColor) {
+
+            document.getElementById("charts").innerHTML += "<div class='card mt-5'><div class='card-body'> <canvas id='" + metaID + "' width='900' height='500'></canvas></div></div>";
+
+            function dataJson() {
+                fetch(`${jsonName}`)
+                    .then(response => response.json())
+                    .then(data => {
+
+                        var jsonData = data.default;
+
+                        var chart_labels = jsonData.timelineData.map(function(b) {
+                            return b.formattedTime;
+                        });;
+
+                        var chart_data = jsonData.timelineData.map(function(b) {
+                            var btc_value = JSON.parse(b.formattedValue);
+                            return btc_value;
+                        });;
+
+                        fetch(`${sc_jsonName}`)
+                            .then(response => response.json())
+                            .then(sc_data => {
+
+                                var sc_jsonData = sc_data.default;
+
+                                var sc_chart_labels = sc_jsonData.timelineData.map(function(b) {
+                                    return b.formattedTime;
+                                });;
+
+                                var sc_chart_data = sc_jsonData.timelineData.map(function(b) {
+                                    var second_value = JSON.parse(b.formattedValue);
+                                    return second_value / 1000 * 1.6;
+                                });;
+
+                                var btc_ctx = document.getElementById(`${metaID}`).getContext('2d');
+                                var btc_myChart = new Chart(btc_ctx, {
+                                    type: 'line',
+                                    data: {
+                                        labels: chart_labels,
+                                        datasets: [{
+                                            label: metaName,
+                                            backgroundColor: backgroundColor,
+                                            borderColor: borderColor,
+                                            data: chart_data,
+                                        }, {
+                                            label: sc_metaName,
+                                            backgroundColor: sc_backgroundColor,
+                                            borderColor: sc_borderColor,
+                                            data: sc_chart_data,
+                                        }]
+                                    },
+
+                                });
+
+                            });
+
+
+                    });
+
+            }
+
+            dataJson();
+        }
+
+        compareChart('bitcoin.json', 'Bitcoin', 'btc-c', 'rgb(242, 169, 0)', 'rgb(242, 169, 0)', 'btc-price.json', 'Price', 'price-c', 'rgb(60, 60, 61)', 'rgb(60, 60, 61)');
+    </script>
+
+</body>
+
+</html>
