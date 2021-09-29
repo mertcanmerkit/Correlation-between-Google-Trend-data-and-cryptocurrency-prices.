@@ -1,0 +1,23 @@
+{
+  "name": "trends",
+  "version": "1.0.0",
+  "description": "",
+  "main": "binance_api.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Mrjavaci/trends.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Mrjavaci/trends/issues"
+  },
+  "homepage": "https://github.com/Mrjavaci/trends#readme",
+  "dependencies": {
+    "axios": "^0.21.4",
+    "google-trends-api": "^4.9.2"
+  }
+}
